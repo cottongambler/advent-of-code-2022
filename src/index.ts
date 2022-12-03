@@ -2,12 +2,14 @@ import { Day } from './day';
 import day0 from './day0';
 import day1 from './day1';
 import day2 from './day2';
+import day3 from './day3';
 // MORE IMPORTS HERE
 
 const days: Day[] = [
     day0,
     day1,
     day2,
+    day3,
     // MORE DAYS HERE
 ];
 
