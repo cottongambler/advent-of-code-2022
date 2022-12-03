@@ -1,17 +1,15 @@
 import { Day } from "../day";
 
 class Day3 extends Day {
-    characters: string[];
-
     constructor(){
         super(3);
-        this.characters = " abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".split('');
     }
 
     solveForPartOne(input: string): string {
         const priorities: number[] = [];
+        const rucksacks = input.split('\n');
 
-        input.split('\n').forEach(rucksack => {
+        rucksacks.forEach(rucksack => {
             const firstCompartment = rucksack.split('').slice(0, rucksack.length / 2);
             const secondCompartment = rucksack.split('').slice(rucksack.length / 2);
 
@@ -35,8 +33,8 @@ class Day3 extends Day {
             
             const sharedItemIndex = firstRucksack.split('')
                 .findIndex(item => 
-                    secondRucksack.split('').includes(item) 
-                    && thirdRucksack.split('').includes(item)
+                    secondRucksack.split('').includes(item) && 
+                    thirdRucksack.split('').includes(item)
                 );
             const sharedItem = firstRucksack[sharedItemIndex];
 
@@ -48,7 +46,8 @@ class Day3 extends Day {
     }
 
     getItemPriority(item: string): number {
-        return this.characters.findIndex(char => char === item);
+        const characters: string[] = " abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ".split('');
+        return characters.findIndex(char => char === item);
     }
 
     sumPriorities(priorities: number[]): number {

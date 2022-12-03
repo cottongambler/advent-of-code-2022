@@ -1,6 +1,6 @@
 import { Day } from "../day";
 
-const enum RockPaperScissor {
+const enum RPS {
     Rock = "rock",
     Paper = "paper",
     Scissor = "scissor",
@@ -15,9 +15,9 @@ const enum GameState {
 };
 
 const opponentInputMapper = {
-    A: RockPaperScissor.Rock,
-    B: RockPaperScissor.Paper,
-    C: RockPaperScissor.Scissor
+    A: RPS.Rock,
+    B: RPS.Paper,
+    C: RPS.Scissor
 };
 
 const gameScoreMapper = {
@@ -28,9 +28,9 @@ const gameScoreMapper = {
 };
 
 const playerScoreMapper = {
-    [RockPaperScissor.Rock]: 1,
-    [RockPaperScissor.Paper]: 2,
-    [RockPaperScissor.Scissor]: 3
+    [RPS.Rock]: 1,
+    [RPS.Paper]: 2,
+    [RPS.Scissor]: 3
 };
 
 class Day2 extends Day {
@@ -71,9 +71,9 @@ class Day2 extends Day {
 
     roundScorePart1(playerInput: string, opponentInput: string): number {
         const playerInputMapperPart1 = {
-            X: RockPaperScissor.Rock,
-            Y: RockPaperScissor.Paper,
-            Z: RockPaperScissor.Scissor
+            X: RPS.Rock,
+            Y: RPS.Paper,
+            Z: RPS.Scissor
         };
 
         const player = playerInputMapperPart1[playerInput as keyof typeof playerInputMapperPart1];
@@ -83,18 +83,18 @@ class Day2 extends Day {
         return gameScoreMapper[roundResult] + playerScoreMapper[player as keyof typeof playerScoreMapper];
     }
 
-    playRoundPart1(player: RockPaperScissor, opponent: RockPaperScissor): GameState {
-        if (player === RockPaperScissor.Rock && opponent === RockPaperScissor.Rock) return GameState.Draw;
-        if (player === RockPaperScissor.Paper && opponent === RockPaperScissor.Paper) return GameState.Draw;
-        if (player === RockPaperScissor.Scissor && opponent === RockPaperScissor.Scissor) return GameState.Draw;
+    playRoundPart1(player: RPS, opponent: RPS): GameState {
+        if (player === RPS.Rock && opponent === RPS.Rock) return GameState.Draw;
+        if (player === RPS.Paper && opponent === RPS.Paper) return GameState.Draw;
+        if (player === RPS.Scissor && opponent === RPS.Scissor) return GameState.Draw;
 
-        if (player === RockPaperScissor.Rock && opponent === RockPaperScissor.Scissor) return GameState.Win;
-        if (player === RockPaperScissor.Paper && opponent === RockPaperScissor.Rock) return GameState.Win;
-        if (player === RockPaperScissor.Scissor && opponent === RockPaperScissor.Paper) return GameState.Win;
+        if (player === RPS.Rock && opponent === RPS.Scissor) return GameState.Win;
+        if (player === RPS.Paper && opponent === RPS.Rock) return GameState.Win;
+        if (player === RPS.Scissor && opponent === RPS.Paper) return GameState.Win;
 
-        if (player === RockPaperScissor.Rock && opponent === RockPaperScissor.Paper) return GameState.Lose;
-        if (player === RockPaperScissor.Paper && opponent === RockPaperScissor.Scissor) return GameState.Lose;
-        if (player === RockPaperScissor.Scissor && opponent === RockPaperScissor.Paper) return GameState.Lose;
+        if (player === RPS.Rock && opponent === RPS.Paper) return GameState.Lose;
+        if (player === RPS.Paper && opponent === RPS.Scissor) return GameState.Lose;
+        if (player === RPS.Scissor && opponent === RPS.Paper) return GameState.Lose;
 
         return GameState.Invalid;
     }
@@ -113,20 +113,20 @@ class Day2 extends Day {
         return gameScoreMapper[roundResult] + playerScoreMapper[player as keyof typeof playerScoreMapper];
     }
 
-    getPlayerMovePart2(opponent: RockPaperScissor, roundResult: GameState): RockPaperScissor {
-        if (opponent === RockPaperScissor.Rock && roundResult === GameState.Win) return RockPaperScissor.Paper;
-        if (opponent === RockPaperScissor.Rock && roundResult === GameState.Draw) return RockPaperScissor.Rock;
-        if (opponent === RockPaperScissor.Rock && roundResult === GameState.Lose) return RockPaperScissor.Scissor;
+    getPlayerMovePart2(opponent: RPS, roundResult: GameState): RPS {
+        if (opponent === RPS.Rock && roundResult === GameState.Win) return RPS.Paper;
+        if (opponent === RPS.Rock && roundResult === GameState.Draw) return RPS.Rock;
+        if (opponent === RPS.Rock && roundResult === GameState.Lose) return RPS.Scissor;
 
-        if (opponent === RockPaperScissor.Paper && roundResult === GameState.Win) return RockPaperScissor.Scissor;
-        if (opponent === RockPaperScissor.Paper && roundResult === GameState.Draw) return RockPaperScissor.Paper;
-        if (opponent === RockPaperScissor.Paper && roundResult === GameState.Lose) return RockPaperScissor.Rock;
+        if (opponent === RPS.Paper && roundResult === GameState.Win) return RPS.Scissor;
+        if (opponent === RPS.Paper && roundResult === GameState.Draw) return RPS.Paper;
+        if (opponent === RPS.Paper && roundResult === GameState.Lose) return RPS.Rock;
 
-        if (opponent === RockPaperScissor.Scissor && roundResult === GameState.Win) return RockPaperScissor.Rock;
-        if (opponent === RockPaperScissor.Scissor && roundResult === GameState.Draw) return RockPaperScissor.Scissor;
-        if (opponent === RockPaperScissor.Scissor && roundResult === GameState.Lose) return RockPaperScissor.Paper;
+        if (opponent === RPS.Scissor && roundResult === GameState.Win) return RPS.Rock;
+        if (opponent === RPS.Scissor && roundResult === GameState.Draw) return RPS.Scissor;
+        if (opponent === RPS.Scissor && roundResult === GameState.Lose) return RPS.Paper;
 
-        return RockPaperScissor.Invalid;
+        return RPS.Invalid;
     }
 
     getTotalScore(scores: number[]): number {

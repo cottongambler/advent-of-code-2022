@@ -3,6 +3,7 @@ import day0 from './day0';
 import day1 from './day1';
 import day2 from './day2';
 import day3 from './day3';
+import day4 from './day4';
 // MORE IMPORTS HERE
 
 const days: Day[] = [
@@ -10,6 +11,7 @@ const days: Day[] = [
     day1,
     day2,
     day3,
+    day4
     // MORE DAYS HERE
 ];
 
@@ -25,7 +27,7 @@ async function runDay(dayId: number) {
   console.log(resultPart2);
 }
 
-console.log("\n\n\n   ADVENT OF CODE 2021 \n\n");
+console.log("\n\n\n   ADVENT OF CODE 2022 \n\n");
 const params = process.argv.splice(2);
 if (params.length) {
   runDay(parseInt(params[0], 10));
