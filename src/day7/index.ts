@@ -62,8 +62,8 @@ class Folder {
     }
 }
 class Day7 extends Day {
-    rootFolder: Folder | undefined;
-    currentFolder: Folder | undefined;
+    rootFolder: Folder | undefined = undefined;
+    currentFolder: Folder | undefined = undefined;
 
     constructor(){
         super(7);
@@ -72,14 +72,23 @@ class Day7 extends Day {
     solveForPartOne(input: string): string {
         this.initFileSystem(input);
         
-        const directories: FolderSize[] = this.filterFoldersByMaxSize(this.rootFolder);
-        const sumSizes = directories.reduce((accumulator, directory) => accumulator + directory.size, 0);
+        const folders: FolderSize[] = this.filterFoldersByMaxSize(this.rootFolder, 100000);
+        const sumSizes = folders.reduce((accumulator, directory) => accumulator + directory.size, 0);
         
         return sumSizes.toString();
     }
 
     solveForPartTwo(input: string): string {
-        return input;
+        this.initFileSystem(input);
+        
+        const usedSpace = (this.rootFolder?.getTotalSize() ?? 0);
+        const unusedSpace = 70000000 - usedSpace;
+        const neededSpace = 30000000 - unusedSpace;
+        
+        const folders: FolderSize[] = this.filterFoldersByMinSize(this.rootFolder, neededSpace);
+        const folderSizes = folders.map(folder => folder.size);
+        
+        return Math.min(...folderSizes).toString();
     }
 
     initFileSystem(input: string) {
@@ -114,7 +123,7 @@ class Day7 extends Day {
 
     filterFoldersByMaxSize(
         folderToStart: Folder | undefined, 
-        maxSize: number = 100000
+        maxSize: number 
     ): FolderSize[] {
         if(!folderToStart) return [];
 
@@ -132,6 +141,29 @@ class Day7 extends Day {
 
         for(let i = 0; i < currentFolder.getSubfolders().length; i++) {
             this.filterMaxSize(folders, currentFolder.getSubfolders()[i], maxSize);
+        }
+    }
+
+    filterFoldersByMinSize(
+        folderToStart: Folder | undefined, 
+        minSize: number
+    ): FolderSize[] {
+        if(!folderToStart) return [];
+
+        const folders: FolderSize[] = [];
+        this.filterMinSize(folders, folderToStart, minSize);
+
+        return folders;
+    }
+
+    private filterMinSize(folders: FolderSize[], currentFolder: Folder, minSize: number) {
+        const totalSize = currentFolder.getTotalSize();
+        if (totalSize >= minSize) {
+            folders.push({name: currentFolder.name, size: totalSize})
+        };
+
+        for(let i = 0; i < currentFolder.getSubfolders().length; i++) {
+            this.filterMinSize(folders, currentFolder.getSubfolders()[i], minSize);
         }
     }
 }
