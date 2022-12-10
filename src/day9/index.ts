@@ -12,10 +12,12 @@ type PossiblePosition = {
 
 type PossiblePositions = PossiblePosition[];
 
+const MAX_KNOTS_PART_1 = 2;
+const MAX_KNOTS_PART_2 = 10;
+
 class Day9 extends Day {
     possiblePositions: PossiblePositions;
-    headRope: Position;
-    tailRope: Position;
+    knotsRope: Position[];
 
     constructor(){
         super(9);
@@ -23,8 +25,7 @@ class Day9 extends Day {
             position: {x: 0, y: 0},
             visited: true
         }];
-        this.headRope = {x: 0, y: 0};
-        this.tailRope = {x: 0, y: 0};
+        this.knotsRope = []
     }
 
     solveForPartOne(input: string): string {
@@ -32,65 +33,88 @@ class Day9 extends Day {
             position: {x: 0, y: 0},
             visited: true
         }];
-        this.headRope = {x: 0, y: 0};
-        this.tailRope = {x: 0, y: 0};
+        this.knotsRope = [];
+        for (let i = 0; i < MAX_KNOTS_PART_1; i++) this.knotsRope.push({x: 0, y: 0});
 
         const lines: string[] = input.split('\n');
         lines.forEach(line => {
             const [newPosition, times] = line.split(' ');
-            this.moveRopePosition(newPosition, Number(times));
+            this.moveKnotsRopePosition(newPosition, Number(times));
         });
 
-
-        return this.getSumTailPositions().toString();
+        return this.getSumVisitedPositions().toString();
     }
 
     solveForPartTwo(input: string): string {
-        return input;
+        this.possiblePositions = [{
+            position: {x: 0, y: 0},
+            visited: true
+        }];
+        this.knotsRope = [];
+        for (let i = 0; i < MAX_KNOTS_PART_2; i++) this.knotsRope.push({x: 0, y: 0});
+
+        const lines: string[] = input.split('\n');
+        lines.forEach(line => {
+            const [newPosition, times] = line.split(' ');
+            this.moveKnotsRopePosition(newPosition, Number(times));
+        });
+
+        return this.getSumVisitedPositions().toString();
     }
 
-    moveRopePosition(position: string, times: number) {
+    moveKnotsRopePosition(position: string, times: number) {
         switch (position) {
-            case 'R': this.headMoveRight(times); break;
-            case 'L': this.headMoveLeft(times); break;
-            case 'U': this.headMoveUp(times); break;
-            case 'D': this.headMoveBottom(times); break;
+            case 'R': this.knotsMoveRight(times); break;
+            case 'L': this.knotsMoveLeft(times); break;
+            case 'U': this.knotsMoveUp(times); break;
+            case 'D': this.knotsMoveBottom(times); break;
             default: break;
         }
     }
 
-    headMoveRight(times: number) {
+    knotsMoveRight(times: number) {
         for (let i = 0; i < times; i++) {
-            this.headRope = {x: this.headRope.x + 1, y: this.headRope.y};
-            if(!this.tailIsAdjacent()) this.tailAdjustPosition();
+            this.knotsRope[0] = {x: this.knotsRope[0].x + 1, y: this.knotsRope[0].y};
+            for(let knot = 1; knot < this.knotsRope.length; knot++) {
+                if(!this.knotIsAdjacent(knot - 1, knot)) this.knotAdjustPosition(knot - 1, knot);
+            }
+
         }
     }
 
-    headMoveLeft(times: number) {
+    knotsMoveLeft(times: number) {
         for (let i = 0; i < times; i++) {
-            this.headRope = {x: this.headRope.x - 1, y: this.headRope.y};
-            if(!this.tailIsAdjacent()) this.tailAdjustPosition();
+            this.knotsRope[0] = {x: this.knotsRope[0].x - 1, y: this.knotsRope[0].y};
+            for(let knot = 1; knot < this.knotsRope.length; knot++) {
+                if(!this.knotIsAdjacent(knot - 1, knot)) this.knotAdjustPosition(knot - 1, knot);
+            }
+
         }
     }
 
-    headMoveUp(times: number) {
+    knotsMoveUp(times: number) {
         for (let i = 0; i < times; i++) {
-            this.headRope = {x: this.headRope.x, y: this.headRope.y + 1};
-            if(!this.tailIsAdjacent()) this.tailAdjustPosition();
+            this.knotsRope[0] = {x: this.knotsRope[0].x, y: this.knotsRope[0].y + 1};
+            for(let knot = 1; knot < this.knotsRope.length; knot++) {
+                if(!this.knotIsAdjacent(knot - 1, knot)) this.knotAdjustPosition(knot - 1, knot);
+            }
+
         }
     }
 
-    headMoveBottom(times: number) {
+    knotsMoveBottom(times: number) {
         for (let i = 0; i < times; i++) {
-            this.headRope = {x: this.headRope.x, y: this.headRope.y - 1};
-            if(!this.tailIsAdjacent()) this.tailAdjustPosition();
+            this.knotsRope[0] = {x: this.knotsRope[0].x, y: this.knotsRope[0].y - 1};
+            for(let knot = 1; knot < this.knotsRope.length; knot++) {
+                if(!this.knotIsAdjacent(knot - 1, knot)) this.knotAdjustPosition(knot - 1, knot);
+            }
+
         }
     }
 
-    tailIsAdjacent(): boolean {
-        const distX = Math.abs(this.headRope.x - this.tailRope.x);
-        const distY = Math.abs(this.headRope.y - this.tailRope.y);
-        
+    knotIsAdjacent(previousKnot: number, currentKnot: number): boolean {
+        const distX = Math.abs(this.knotsRope[previousKnot].x - this.knotsRope[currentKnot].x);
+        const distY = Math.abs(this.knotsRope[previousKnot].y - this.knotsRope[currentKnot].y);
         
         if(distX === 0 && distY === 0) return true;
         else if (distX === 1 && distY === 0) return true;
@@ -100,31 +124,40 @@ class Day9 extends Day {
         return false;
     }
 
-    tailAdjustPosition() {
-        if (this.headRope.x > this.tailRope.x) this.tailRope.x = this.tailRope.x + 1;
-        else if (this.headRope.x < this.tailRope.x) this.tailRope.x = this.tailRope.x - 1;
+    knotAdjustPosition(previousKnot: number, currentKnot: number) {
+        if (this.knotsRope[previousKnot].x > this.knotsRope[currentKnot].x) {
+            this.knotsRope[currentKnot].x = this.knotsRope[currentKnot].x + 1;
+        }
+        else if (this.knotsRope[previousKnot].x < this.knotsRope[currentKnot].x) {
+            this.knotsRope[currentKnot].x = this.knotsRope[currentKnot].x - 1;
+        }
         
-        if (this.headRope.y > this.tailRope.y) this.tailRope.y = this.tailRope.y + 1;
-        else if (this.headRope.y < this.tailRope.y) this.tailRope.y = this.tailRope.y - 1;
+        if (this.knotsRope[previousKnot].y > this.knotsRope[currentKnot].y) {
+            this.knotsRope[currentKnot].y = this.knotsRope[currentKnot].y + 1;
+        }
+        else if (this.knotsRope[previousKnot].y < this.knotsRope[currentKnot].y) {
+            this.knotsRope[currentKnot].y = this.knotsRope[currentKnot].y - 1;
+        }
 
-        this.checkPositionVisitedByTail();
+        this.checkPositionVisitedByLastKnot();
     }
 
-    checkPositionVisitedByTail() {
+    checkPositionVisitedByLastKnot() {
+        const knotsLength = this.knotsRope.length;
         const possiblePosition = this.possiblePositions
             .find(possiblePosition => 
-                possiblePosition.position.x === this.tailRope.x && 
-                possiblePosition.position.y === this.tailRope.y);
+                possiblePosition.position.x === this.knotsRope[knotsLength - 1].x && 
+                possiblePosition.position.y === this.knotsRope[knotsLength - 1].y);
 
-        if(possiblePosition) return; 
+        if(possiblePosition) return;
 
         this.possiblePositions.push({
-            position: {x: this.tailRope.x, y: this.tailRope.y},
+            position: {x: this.knotsRope[knotsLength - 1].x, y: this.knotsRope[knotsLength - 1].y},
             visited: true
         });
     }
 
-    getSumTailPositions(): number {
+    getSumVisitedPositions(): number {
         const visitedPositions = this.possiblePositions
             .map(position => position.visited)
             .reduce((accumulator, currentValue) => accumulator + (currentValue ? 1 : 0), 0);
