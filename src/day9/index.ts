@@ -1,29 +1,37 @@
 import { Day } from "../day";
 
-type Coordinates = {
+type Position = {
     x: number;
     y: number;
 }
 
-type Positions = boolean[][];
+type PossiblePosition = {
+    position: Position;
+    visited: boolean;
+};
 
-const POSITION_SIZE_X = 6;
-const POSITION_SIZE_Y = 5;
+type PossiblePositions = PossiblePosition[];
 
 class Day9 extends Day {
-    possiblePositions: Positions;
-    headRope: Coordinates;
-    tailRope: Coordinates;
+    possiblePositions: PossiblePositions;
+    headRope: Position;
+    tailRope: Position;
 
     constructor(){
         super(9);
-        this.possiblePositions = this.initPositions();
+        this.possiblePositions = [{
+            position: {x: 0, y: 0},
+            visited: true
+        }];
         this.headRope = {x: 0, y: 0};
         this.tailRope = {x: 0, y: 0};
     }
 
     solveForPartOne(input: string): string {
-        this.possiblePositions = this.initPositions();
+        this.possiblePositions = [{
+            position: {x: 0, y: 0},
+            visited: true
+        }];
         this.headRope = {x: 0, y: 0};
         this.tailRope = {x: 0, y: 0};
 
@@ -31,10 +39,6 @@ class Day9 extends Day {
         lines.forEach(line => {
             const [newPosition, times] = line.split(' ');
             this.moveRopePosition(newPosition, Number(times));
-            
-            console.log('head', this.headRope);
-            console.log('tail', this.tailRope);
-            this.printPosition();
         });
 
 
@@ -43,38 +47,6 @@ class Day9 extends Day {
 
     solveForPartTwo(input: string): string {
         return input;
-    }
-
-    initPositions(): Positions {
-        const positions: Positions = Array.from(Array(POSITION_SIZE_X), () => []);
-        for(let x = 0; x < POSITION_SIZE_X; x++) {
-            const column: boolean[] = positions[x];
-            for (let y = 0; y < POSITION_SIZE_Y; y++) {
-                const defaultMapCell = false;
-                column.push(defaultMapCell);
-            }
-        }
-
-        positions[0][0] = true;
-
-        return positions;
-    }
-
-    printPosition() {
-        let printedMap: string = '';
-        for (let y = this.possiblePositions[0].length - 1; y >= 0; y--) {
-            for(let x = 0; x < this.possiblePositions.length; x++) {
-                let char = '.';
-                if(x === 0 && y === 0) char = 's';
-                if(x === this.tailRope.x && y === this.tailRope.y) char = 'T';
-                if(x === this.headRope.x && y === this.headRope.y) char = 'H';
-
-                printedMap += char;
-            }
-            printedMap += '\n';
-        }
-
-        console.log(printedMap);
     }
 
     moveRopePosition(position: string, times: number) {
@@ -139,18 +111,25 @@ class Day9 extends Day {
     }
 
     checkPositionVisitedByTail() {
-        this.possiblePositions[this.tailRope.x][this.tailRope.y] = true;
+        const possiblePosition = this.possiblePositions
+            .find(possiblePosition => 
+                possiblePosition.position.x === this.tailRope.x && 
+                possiblePosition.position.y === this.tailRope.y);
+
+        if(possiblePosition) return; 
+
+        this.possiblePositions.push({
+            position: {x: this.tailRope.x, y: this.tailRope.y},
+            visited: true
+        });
     }
 
     getSumTailPositions(): number {
-        let sum = 0;
-        for(let x = 0; x < POSITION_SIZE_X; x++) {
-            for (let y = 0; y < POSITION_SIZE_Y; y++) {
-                if (this.possiblePositions[x][y]) sum++;
-            }
-        }
+        const visitedPositions = this.possiblePositions
+            .map(position => position.visited)
+            .reduce((accumulator, currentValue) => accumulator + (currentValue ? 1 : 0), 0);
 
-        return sum;
+        return visitedPositions;
     }
 }
 
